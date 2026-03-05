@@ -95,7 +95,7 @@ def open_insert_form():
     def submit_data():
         title = entries["Pealkiri"].get().strip()
         if not title:
-            messagebox.showwarning("Puuduv kohustuslik väli", 'Väli "Pealkiri" on kohustuslik.', parent=form)
+            messagebox.showwarning("Puuduv kohustuslik väli", "Väli \"Pealkiri\" on kohustuslik.", parent=form)
             entries["Pealkiri"].focus_set()
             return
 
@@ -174,7 +174,6 @@ for col in COLUMNS:
         width = 60
     tree.column(col, width=width, anchor="w")
 
-# Kerimisribad
 scrollbar_y = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
 scrollbar_x = ttk.Scrollbar(table_frame, orient="horizontal", command=tree.xview)
 tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
