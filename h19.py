@@ -1,4 +1,4 @@
-﻿import sqlite3
+import sqlite3
 import subprocess
 import sys
 import tkinter as tk
@@ -127,6 +127,7 @@ def open_update_form():
     for i, label in enumerate(labels):
         label_text = f"{label} *" if label == "Pealkiri" else label
         tk.Label(edit_window, text=label_text).grid(row=i, column=0, padx=10, pady=5, sticky="e")
+
         entry = tk.Entry(edit_window, width=40)
         entry.grid(row=i, column=1, padx=10, pady=5)
 
@@ -144,7 +145,7 @@ def open_update_form():
     def update_data():
         title = entries["Pealkiri"].get().strip()
         if not title:
-            messagebox.showwarning("Puuduv kohustuslik väli", 'Väli "Pealkiri" on kohustuslik.', parent=edit_window)
+            messagebox.showwarning("Puuduv kohustuslik väli", "Väli \"Pealkiri\" on kohustuslik.", parent=edit_window)
             entries["Pealkiri"].focus_set()
             return
 
@@ -212,6 +213,7 @@ controls = tk.Frame(root)
 controls.pack(fill="x", padx=10, pady=8)
 
 tk.Label(controls, text="Otsi (pealkiri/režissöör/žanr):").pack(side="left")
+
 search_var = tk.StringVar()
 search_entry = tk.Entry(controls, textvariable=search_var, width=40)
 search_entry.pack(side="left", padx=(6, 8))
@@ -225,6 +227,7 @@ table_frame = tk.Frame(root)
 table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
 
 tree = ttk.Treeview(table_frame, columns=COLUMNS, show="headings")
+
 for col in COLUMNS:
     tree.heading(col, text=HEADERS[col])
     width = 130 if col != "description" else 280
@@ -234,6 +237,7 @@ for col in COLUMNS:
 
 scroll_y = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
 scroll_x = ttk.Scrollbar(table_frame, orient="horizontal", command=tree.xview)
+
 tree.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
 
 tree.grid(row=0, column=0, sticky="nsew")
