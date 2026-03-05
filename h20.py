@@ -127,12 +127,14 @@ def open_update_form():
     for i, label in enumerate(labels):
         label_text = f"{label} *" if label == "Pealkiri" else label
         tk.Label(edit_window, text=label_text).grid(row=i, column=0, padx=10, pady=5, sticky="e")
+
         entry = tk.Entry(edit_window, width=40)
         entry.grid(row=i, column=1, padx=10, pady=5)
 
         value = record[FIELD_MAP[label]]
         if value is None:
             value = ""
+
         entry.insert(0, str(value))
         entries[label] = entry
 
@@ -142,8 +144,13 @@ def open_update_form():
 
     def update_data():
         title = entries["Pealkiri"].get().strip()
+
         if not title:
-            messagebox.showwarning("Puuduv kohustuslik väli", 'Väli "Pealkiri" on kohustuslik.', parent=edit_window)
+            messagebox.showwarning(
+                "Puuduv kohustuslik väli",
+                "Väli \"Pealkiri\" on kohustuslik.",
+                parent=edit_window,
+            )
             entries["Pealkiri"].focus_set()
             return
 
@@ -172,6 +179,7 @@ def open_update_form():
         try:
             conn = get_connection()
             cursor = conn.cursor()
+
             cursor.execute(
                 """
                 UPDATE movies
@@ -180,28 +188,45 @@ def open_update_form():
                 """,
                 (title, director, release_year, genre, duration, rating, language, country, description, movie_id),
             )
+
             conn.commit()
 
             if cursor.rowcount == 0:
-                messagebox.showerror("Muutmine ebaõnnestus", "Kirjet ei leitud või muutmist ei toimunud.", parent=edit_window)
+                messagebox.showerror(
+                    "Muutmine ebaõnnestus",
+                    "Kirjet ei leitud või muutmist ei toimunud.",
+                    parent=edit_window,
+                )
             else:
-                messagebox.showinfo("Muutmine õnnestus", "Andmed uuendati edukalt.", parent=edit_window)
+                messagebox.showinfo(
+                    "Muutmine õnnestus",
+                    "Andmed uuendati edukalt.",
+                    parent=edit_window,
+                )
                 edit_window.destroy()
                 refresh_table()
 
         except sqlite3.Error as error:
-            messagebox.showerror("Muutmine ebaõnnestus", f"Andmete muutmisel tekkis viga:\n{error}", parent=edit_window)
+            messagebox.showerror(
+                "Muutmine ebaõnnestus",
+                f"Andmete muutmisel tekkis viga:\n{error}",
+                parent=edit_window,
+            )
         finally:
             if "conn" in locals():
                 conn.close()
 
     tk.Button(edit_window, text="Salvesta muudatused", command=update_data).grid(
-        row=len(labels) + 1, column=0, columnspan=2, pady=12
+        row=len(labels) + 1,
+        column=0,
+        columnspan=2,
+        pady=12,
     )
 
 
 def delete_selected_row():
     selected = tree.selection()
+
     if not selected:
         messagebox.showwarning("Valik puudub", "Vali tabelist rida, mida soovid kustutada.")
         return
@@ -212,14 +237,16 @@ def delete_selected_row():
 
     confirm = messagebox.askyesno(
         "Kustutamise kinnitus",
-        f'Kas soovid kindlasti kustutada filmi "{title}" (ID: {movie_id})?'
+        f"Kas soovid kindlasti kustutada filmi \"{title}\" (ID: {movie_id})?",
     )
+
     if not confirm:
         return
 
     try:
         conn = get_connection()
         cursor = conn.cursor()
+
         cursor.execute("DELETE FROM movies WHERE id = ?", (movie_id,))
         conn.commit()
 
@@ -227,10 +254,11 @@ def delete_selected_row():
             messagebox.showerror("Kustutamine ebaõnnestus", "Kirjet ei leitud või seda ei saanud kustutada.")
         else:
             messagebox.showinfo("Kustutamine õnnestus", "Rida kustutati edukalt.")
-            refresh_table()  # värskendab andmed pärast kustutamist
+            refresh_table()
 
     except sqlite3.Error as error:
         messagebox.showerror("Kustutamine ebaõnnestus", f"Kustutamisel tekkis viga:\n{error}")
+
     finally:
         if "conn" in locals():
             conn.close()
@@ -244,7 +272,9 @@ controls = tk.Frame(root)
 controls.pack(fill="x", padx=10, pady=8)
 
 tk.Label(controls, text="Otsi (pealkiri/režissöör/žanr):").pack(side="left")
+
 search_var = tk.StringVar()
+
 search_entry = tk.Entry(controls, textvariable=search_var, width=40)
 search_entry.pack(side="left", padx=(6, 8))
 search_entry.bind("<KeyRelease>", refresh_table)
@@ -258,15 +288,20 @@ table_frame = tk.Frame(root)
 table_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
 
 tree = ttk.Treeview(table_frame, columns=COLUMNS, show="headings")
+
 for col in COLUMNS:
     tree.heading(col, text=HEADERS[col])
+
     width = 130 if col != "description" else 280
+
     if col == "id":
         width = 60
+
     tree.column(col, width=width, anchor="w")
 
 scroll_y = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
 scroll_x = ttk.Scrollbar(table_frame, orient="horizontal", command=tree.xview)
+
 tree.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
 
 tree.grid(row=0, column=0, sticky="nsew")
